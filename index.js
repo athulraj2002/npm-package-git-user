@@ -2,15 +2,22 @@ const fetch = require('node-fetch');
 const fs = require("fs");
 let header;
 
-
+/**
+ * Function to set user token to a json file
+ */
 module.exports.setToken = (userToken) => {
     token = {
         userToken
     };
     fs.writeFileSync("token.json", JSON.stringify(token));
 }
+
+/**
+ * Function to get user data
+ * @param username username entered by user to find data
+ */
 module.exports.userAllData = async (username) => {
-    setHeader();
+    await setHeader();
     if (istoken()) {
         try {
             const data = await Promise.all([
@@ -35,11 +42,13 @@ module.exports.userAllData = async (username) => {
         return 'ERROR: Specify User Token'
 
     }
-
-
 }
+/**
+ * Function to get basic user data
+ * @param username username entered by user to find data
+ */
 module.exports.userbasicData = async (username) => {
-    setHeader();
+    await setHeader();
     const url = `https://api.github.com/users/${username}`;
     if (istoken()) {
         try {
@@ -54,14 +63,15 @@ module.exports.userbasicData = async (username) => {
         return 'ERROR: Specify User Token'
 
     }
-
-
 }
-
+/**
+ * Function to get user Following data
+ * @param username username entered by user to find data
+ */
 module.exports.userFollowingList = async (username) => {
-    setHeader();
-    const url = `https://api.github.com/users/${username}/following`;
+    await setHeader();
 
+    const url = `https://api.github.com/users/${username}/following`;
     if (istoken()) {
         try {
             const sample = await fetch(url, header)
@@ -76,9 +86,12 @@ module.exports.userFollowingList = async (username) => {
 
     }
 }
-
+/**
+ * Function to get user Follower data
+ * @param username username entered by user to find data
+ */
 module.exports.userFollowerList = async (username) => {
-    setHeader();
+    await setHeader();
     const url = `https://api.github.com/users/${username}/followers`;
     if (istoken()) {
         try {
@@ -94,8 +107,12 @@ module.exports.userFollowerList = async (username) => {
 
     }
 }
+/**
+ * Function to get user Repository data
+ * @param username username entered by user to find data
+ */
 module.exports.userRepoList = async (username) => {
-    setHeader();
+    await setHeader();
     const url = `https://api.github.com/users/${username}/repos`;
     if (istoken()) {
         try {
@@ -144,14 +161,17 @@ const userRepo = (username) => {
     return sample;
 }
 const setHeader = async () => {
-    const token = await getToken()  
-     header = {
+    const token = await getToken()
+    header = {
         headers: {
             authorization: `token ${token} `
         }
     }
 
 }
+/**
+ * function to get token
+ */
 const getToken = () => {
     try {
         let data = fs.readFileSync('token.json').toString();
@@ -163,6 +183,9 @@ const getToken = () => {
     }
 
 }
+/**
+ * function to ceck token
+ */
 function istoken() {
     try {
         let data = fs.readFileSync('token.json').toString();
