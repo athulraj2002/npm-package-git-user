@@ -1,6 +1,7 @@
 const user = require('./index');
 
 
-user.setToken('774420d34e6ce265cbc10812ca2f02042126157e');
-user.userdata('athulraj2002').then(val=>console.log(val));
+user.setToken('ef10dc9f15c620178c374011f7e3c6064054cc11');
+user.userAllData('athulraj2002').then(val=>console.log(val));
+// user.userFollowingList('athulraj2002').then(val=>console.log(val));
 

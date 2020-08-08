@@ -1,31 +1,115 @@
 const fetch = require('node-fetch');
-let userData = null;
-let token = null;
-let header = {
-    headers: {
-        authorization: `token ${token} `
-    }
-}
+const fs = require("fs");
+let header;
+
+
 module.exports.setToken = (userToken) => {
-    token = userToken;
-    header = {
-        headers: {
-            authorization: `token ${token} `
+    token = {
+        userToken
+    };
+    fs.writeFileSync("token.json", JSON.stringify(token));
+}
+module.exports.userAllData = async (username) => {
+    setHeader();
+    if (istoken()) {
+        try {
+            const data = await Promise.all([
+                basicData(username), userFollowing(username), userFollower(username), userRepo(username)
+            ]);
+            if (data[0].message) {
+                return (`ERROR ${data[0].message}`)
+            } else {
+                const userData = {
+                    user: data[0],
+                    followingList: data[1],
+                    followerList: data[2],
+                    userRepoData: data[3],
+                }
+                return userData;
+            }
+        } catch (error) {
+            console.log(error);
+
         }
+    } else {
+        return 'ERROR: Specify User Token'
+
+    }
+
+
+}
+module.exports.userbasicData = async (username) => {
+    setHeader();
+    const url = `https://api.github.com/users/${username}`;
+    if (istoken()) {
+        try {
+            const sample = await fetch(url, header)
+                .then((data) => data.json())
+                .then(user => user);
+            return sample;
+        } catch (error) {
+            return error;
+        }
+    } else {
+        return 'ERROR: Specify User Token'
+
+    }
+
+
+}
+
+module.exports.userFollowingList = async (username) => {
+    setHeader();
+    const url = `https://api.github.com/users/${username}/following`;
+
+    if (istoken()) {
+        try {
+            const sample = await fetch(url, header)
+                .then((data) => data.json())
+                .then(user => user);
+            return sample;
+        } catch (error) {
+            return error;
+        }
+    } else {
+        return 'ERROR: Specify User Token'
+
     }
 }
-module.exports.userdata = async (username) => {
-    if (token) {
-        const data = await Promise.all([
-            basicData(username), userFollowing(username), userFollower(username), userRepo(username)
-        ]);
-        return data;
+
+module.exports.userFollowerList = async (username) => {
+    setHeader();
+    const url = `https://api.github.com/users/${username}/followers`;
+    if (istoken()) {
+        try {
+            const sample = await fetch(url, header)
+                .then((data) => data.json())
+                .then(user => user);
+            return sample;
+        } catch (error) {
+            return error;
+        }
     } else {
-        console.log('no token');
+        return 'ERROR: Specify User Token'
 
     }
+}
+module.exports.userRepoList = async (username) => {
+    setHeader();
+    const url = `https://api.github.com/users/${username}/repos`;
+    if (istoken()) {
+        try {
+            const sample = await fetch(url, header)
+                .then((data) => data.json())
+                .then(user => user);
+            return sample;
+        } catch (error) {
+            return error;
+        }
+    } else {
+        return 'ERROR: Specify User Token'
 
-    // setAuth('', '');
+    }
 }
 const basicData = async (username) => {
     const url = `https://api.github.com/users/${username}`;
@@ -59,15 +143,34 @@ const userRepo = (username) => {
         .then(user => user);
     return sample;
 }
-async function setAuth() {
-    const response = await fetch(
-        "https://api.github.com/repos/octokit/core.js/releases/latest",
-        {
-            headers: {
-                authorization: "token 774420d34e6ce265cbc10812ca2f02042126157e "
-            }
+const setHeader = async () => {
+    const token = await getToken()  
+     header = {
+        headers: {
+            authorization: `token ${token} `
         }
-    )
-    console.log(await response.json());
-}
+    }
 
+}
+const getToken = () => {
+    try {
+        let data = fs.readFileSync('token.json').toString();
+        let usertoken = JSON.parse(data).userToken;
+        if (usertoken) return usertoken;
+        else return null
+    } catch (error) {
+        return false
+    }
+
+}
+function istoken() {
+    try {
+        let data = fs.readFileSync('token.json').toString();
+        let usertoken = JSON.parse(data).userToken;
+        if (usertoken) return true
+        else return false
+    } catch (error) {
+        return false
+    }
+
+}
