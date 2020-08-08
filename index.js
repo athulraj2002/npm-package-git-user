@@ -1,12 +1,11 @@
 const fetch = require('node-fetch');
 const fs = require("fs");
 let header;
-
 /**
  * Function to set user token to a json file
  */
 module.exports.setToken = (userToken) => {
-    token = {
+    var token = {
         userToken
     };
     fs.writeFileSync("token.json", JSON.stringify(token));
@@ -17,7 +16,7 @@ module.exports.setToken = (userToken) => {
  * @param username username entered by user to find data
  */
 module.exports.userAllData = async (username) => {
-    await setHeader();
+    header =  await setHeader();
     if (istoken()) {
         try {
             const data = await Promise.all([
@@ -48,7 +47,7 @@ module.exports.userAllData = async (username) => {
  * @param username username entered by user to find data
  */
 module.exports.userbasicData = async (username) => {
-    await setHeader();
+    const header =  await setHeader();
     const url = `https://api.github.com/users/${username}`;
     if (istoken()) {
         try {
@@ -69,8 +68,7 @@ module.exports.userbasicData = async (username) => {
  * @param username username entered by user to find data
  */
 module.exports.userFollowingList = async (username) => {
-    await setHeader();
-
+    const header =  await setHeader();
     const url = `https://api.github.com/users/${username}/following`;
     if (istoken()) {
         try {
@@ -91,7 +89,7 @@ module.exports.userFollowingList = async (username) => {
  * @param username username entered by user to find data
  */
 module.exports.userFollowerList = async (username) => {
-    await setHeader();
+   const header =  await setHeader();
     const url = `https://api.github.com/users/${username}/followers`;
     if (istoken()) {
         try {
@@ -112,7 +110,7 @@ module.exports.userFollowerList = async (username) => {
  * @param username username entered by user to find data
  */
 module.exports.userRepoList = async (username) => {
-    await setHeader();
+    const header =  await setHeader();
     const url = `https://api.github.com/users/${username}/repos`;
     if (istoken()) {
         try {
@@ -136,7 +134,6 @@ const basicData = async (username) => {
     return sample;
 }
 const userFollowing = (username) => {
-
     const followingUrl = `https://api.github.com/users/${username}/following`;
     const sample = fetch(followingUrl, header)
         .then(data => data.json())
@@ -145,7 +142,6 @@ const userFollowing = (username) => {
 }
 
 const userFollower = (username) => {
-
     const followingUrl = `https://api.github.com/users/${username}/followers`;
     const sample = fetch(followingUrl, header)
         .then(data => data.json())
@@ -153,7 +149,6 @@ const userFollower = (username) => {
     return sample;
 }
 const userRepo = (username) => {
-
     const followingUrl = `https://api.github.com/users/${username}/repos`;
     const sample = fetch(followingUrl, header)
         .then(data => data.json())
@@ -167,7 +162,7 @@ const setHeader = async () => {
             authorization: `token ${token} `
         }
     }
-
+    return header;
 }
 /**
  * function to get token
