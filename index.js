@@ -16,7 +16,7 @@ module.exports.setToken = (userToken) => {
  * @param username username entered by user to find data
  */
 module.exports.userAllData = async (username) => {
-    header =  await setHeader();
+    header = await setHeader();
     if (istoken()) {
         try {
             const data = await Promise.all([
@@ -47,7 +47,7 @@ module.exports.userAllData = async (username) => {
  * @param username username entered by user to find data
  */
 module.exports.userbasicData = async (username) => {
-    const header =  await setHeader();
+    const header = await setHeader();
     const url = `https://api.github.com/users/${username}`;
     if (istoken()) {
         try {
@@ -68,7 +68,7 @@ module.exports.userbasicData = async (username) => {
  * @param username username entered by user to find data
  */
 module.exports.userFollowingList = async (username) => {
-    const header =  await setHeader();
+    const header = await setHeader();
     const url = `https://api.github.com/users/${username}/following`;
     if (istoken()) {
         try {
@@ -89,7 +89,7 @@ module.exports.userFollowingList = async (username) => {
  * @param username username entered by user to find data
  */
 module.exports.userFollowerList = async (username) => {
-   const header =  await setHeader();
+    const header = await setHeader();
     const url = `https://api.github.com/users/${username}/followers`;
     if (istoken()) {
         try {
@@ -110,8 +110,68 @@ module.exports.userFollowerList = async (username) => {
  * @param username username entered by user to find data
  */
 module.exports.userRepoList = async (username) => {
-    const header =  await setHeader();
+    const header = await setHeader();
     const url = `https://api.github.com/users/${username}/repos`;
+    if (istoken()) {
+        try {
+            const sample = await fetch(url, header)
+                .then((data) => data.json())
+                .then(user => user);
+            return sample;
+        } catch (error) {
+            return error;
+        }
+    } else {
+        return 'ERROR: Specify User Token'
+
+    }
+}
+/**
+ * Function to get random user  data
+ * @param count no of users data to be fetched
+ */
+module.exports.getRandomUsers = async (count) => {
+    const header = await setHeader();
+    let userData = [];
+    let counter = 0
+    if (istoken()) {
+        try {
+            if (count <= 30) {
+                const url = `https://api.github.com/users`;
+                await fetch(url, header)
+                    .then((data) => data.json())
+                    .then(user => userData = [...user]);
+                userData.length = count;
+                return userData;
+            } else if (count > 30) {
+                for (counter; counter < count;) {
+                    const url = `https://api.github.com/users?since=${counter}`;
+                    await fetch(url, header)
+                        .then((data) => data.json())
+                        .then(user => {
+                            userData = [...userData, ...user]
+                        });
+                    counter += 30;
+                }
+                userData.length = count;
+                return userData;
+            }
+
+        } catch (error) {
+            return error;
+        }
+    } else {
+        return 'ERROR: Specify User Token'
+
+    }
+}
+/**
+ * Function to get current user  data
+ * 
+ */
+module.exports.getCurrentUserData = async () => {
+    const header = await setHeader();
+    const url = `https://api.github.com/user`;
     if (istoken()) {
         try {
             const sample = await fetch(url, header)
@@ -155,6 +215,9 @@ const userRepo = (username) => {
         .then(user => user);
     return sample;
 }
+/**
+ * Function to set header.
+ */
 const setHeader = async () => {
     const token = await getToken()
     header = {
@@ -179,7 +242,7 @@ const getToken = () => {
 
 }
 /**
- * function to ceck token
+ * function to check token
  */
 function istoken() {
     try {
